@@ -2,8 +2,8 @@ Resources:
   CodeCommitRepo:
     Type: AWS::CodeCommit::Repository
     Properties:
-      RepositoryDescription: Demo Repo
-      RepositoryName: demoRepo
+      RepositoryDescription: <your-repo-discription>
+      RepositoryName: <your-repo-name>
       Tags: 
        - Key: env
          Value: dev
@@ -11,7 +11,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
     Properties:
-      BucketName: hqd-codebuild
+      BucketName: <your-bucket-name>
       Tags: 
        - Key: env
          Value: dev
@@ -29,13 +29,13 @@ Resources:
         PrivilegedMode: true
         EnvironmentVariables:
           - Name: AWS_DEFAULT_REGION
-            Value: ap-northeast-1
+            Value: <your-region>
           - Name: AWS_ACCOUNT_ID
-            Value: 095368940515
+            Value: <your-account-number>
           - Name: IMAGE_REPO_NAME
-            Value: haquocdat
+            Value: <your-ecr-repo-name>
           - Name: IMAGE_TAG
-            Value: latest
+            Value: <your-image-tag>
       Source:
         Type: CODECOMMIT
         Location: !Join
@@ -43,11 +43,11 @@ Resources:
           - - 'https://git-codecommit.'
             - !Ref 'AWS::Region'
             - '.amazonaws.com/v1/repos/'
-            - 'demoRepo'
+            - '<your-repo-name>'
       TimeoutInMinutes: 10
       Cache:
         Type: S3
-        Location: hqd-codebuild/build
+        Location: <your-bucket-name>/build
       Tags: 
        - Key: env
          Value: dev
@@ -87,7 +87,7 @@ Resources:
   MyRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: haquocdat
+      RepositoryName: <your-ecr-name>
       Tags: 
        - Key: env
          Value: dev
