@@ -6,6 +6,7 @@ This is a demonstration of using aws pipeline and k8s in cicd
 * [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 * [awscli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 * [config-profile](https://docs.aws.amazon.com/cli/latest/reference/configure/)
+* [aws-codecommit-account](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
 # Start
@@ -40,4 +41,27 @@ aws cloudformation describe-stacks --query Stacks[].Outputs[*].[OutputKey,Output
 ```
 aws eks update-kubeconfig --name my-eks
 ```
+### 2. pipeline
+#### 1. Clone aws codecommit repo
+Copy https url from Output
+```
+git clone <your-aws-codecommit-https-url>
+```
+Then enter your aws code commit username and password. [aws-codecommit-account](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html)
+```
+cd <your-aws-codecommit-repo-name>
+```
+then create a frontend project inside it. In my case it is `vue`
+Add `Dockerfile` . In my case it is [vue-dockerization](https://v2.vuejs.org/v2/cookbook/dockerize-vuejs-app)
+Add `buildspec.yaml` at `root` folder
+Create a commit and push it to `aws-codecommit-repo`
 
+## 6. Start build docker image
+Get `codebuild-project-name` and `Ecr-repo-name` from `Output`:
+```
+aws codebuild start-build --project-name <your-codebuild-project-name>
+```
+Wait a little bit and check image :
+```
+aws ecr describe-images --repository-name <your-ecr-repo-name>
+```
