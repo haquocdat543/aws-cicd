@@ -8,6 +8,7 @@ This is a demonstration of using aws pipeline and k8s in cicd
 * [config-profile](https://docs.aws.amazon.com/cli/latest/reference/configure/)
 * [aws-codecommit-account](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/)
+* [kubectl-argo-rollouts](https://github.com/argoproj/argo-rollouts/blob/master/docs/installation.md)
 
 # Start
 ## 1. Clone repo
@@ -65,3 +66,37 @@ Wait a little bit and check image :
 ```
 aws ecr describe-images --repository-name <your-ecr-repo-name>
 ```
+## 7. Argo Rollouts
+### 1. Install kubectl argo rollouts
+Find compatible version and platform here. [kubectl-argo-rollouts](https://github.com/argoproj/argo-rollouts/blob/master/docs/installation.md)
+```
+curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+chmod +x ./kubectl-argo-rollouts-linux-amd64
+sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+kubectl argo rollouts version
+```
+### 2. Install argocd rollouts CRD
+```
+kubectl create namespace argo-rollouts
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+```
+### 3. Apply rollouts
+```
+kubectl apply -f bluegreen-rollout.yaml
+```
+### 4. Apply resources
+```
+kubectl apply -f service.yaml
+```
+### 5. Patch services
+```
+kubectl patch svc bluegreen-demo -n default -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc bluegreen-demo-preview -n default -p '{"spec": {"type": "LoadBalancer"}}'
+```
+### 6. Access services
+```
+kubectl get svc
+```
+Copy both `Loadbalancer-dns` and open it in your browser
+
+
