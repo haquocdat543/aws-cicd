@@ -99,4 +99,39 @@ kubectl get svc
 ```
 Copy both `Loadbalancer-dns` and open it in your browser
 
+### 7. Login to ECR 
+
+You need to replace variables before execute following commands :
+* $AWS_DEFAULT_REGION
+* $AWS_ACCOUNT_ID
+```
+aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+```
+Or you can go to `AWS` > `ECR` > `Private Registry` > `Repositories` > `Your Repo` > `View Push Commands` > copy and execute first command
+
+### 8. Configure Secret
+#### 1. generated file
+```
+cat ~/.docker/config.json | base64
+```
+Copy the output and paste to `secret.yaml` file :
+#### 2. create docker login secret from config.json file
+```
+kubectl create secret generic my-registry-key \
+--from-file=.dockerconfigjson=.docker/config.json \
+--type=kubernetes.io/dockerconfigjson
+
+kubectl create secret generic my-registry-key --from-file=.dockerconfigjson=.docker/config.json --type=kubernetes.io/dockerconfigjson
+
+kubect get secret
+```
+#### 3. create docker login secret with login credentials
+```
+kubectl create secret docker-registry my-registry-key \
+--docker-server=https://private-repo \
+--docker-username=user \
+--docker-password=pwd
+
+kubectl create secret docker-registry my-registry-key --docker-server=https://private-repo --docker-username=user --docker-password=pwd
+```
 
