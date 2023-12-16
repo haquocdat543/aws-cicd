@@ -80,26 +80,7 @@ kubectl argo rollouts version
 kubectl create namespace argo-rollouts
 kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
 ```
-### 3. Apply rollouts
-```
-kubectl apply -f bluegreen-rollout.yaml
-```
-### 4. Apply resources
-```
-kubectl apply -f service.yaml
-```
-### 5. Patch services
-```
-kubectl patch svc bluegreen-demo -n default -p '{"spec": {"type": "LoadBalancer"}}'
-kubectl patch svc bluegreen-demo-preview -n default -p '{"spec": {"type": "LoadBalancer"}}'
-```
-### 6. Access services
-```
-kubectl get svc
-```
-Copy both `Loadbalancer-dns` and open it in your browser
-
-### 7. Login to ECR 
+### 3. Login to ECR 
 
 You need to replace variables before execute following commands :
 * $AWS_DEFAULT_REGION
@@ -109,7 +90,7 @@ aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --usernam
 ```
 Or you can go to `AWS` > `ECR` > `Private Registry` > `Repositories` > `Your Repo` > `View Push Commands` > copy and execute first command
 
-### 8. Configure Secret
+### 4. Configure Secret
 #### 1. generated file
 ```
 cat ~/.docker/config.json | base64
@@ -133,5 +114,37 @@ kubectl create secret docker-registry my-registry-key \
 --docker-password=pwd
 
 kubectl create secret docker-registry my-registry-key --docker-server=https://private-repo --docker-username=user --docker-password=pwd
+```
+### 5. Edit bluegreen-rollout.yaml
+Modify your imagePullSecret to `Your registry secret`
+### 6. Apply bluegreen
+```
+kubectl apply -f bluegreen-rollout.yaml
+```
+
+
+### 7. Patch services
+```
+kubectl patch svc bluegreen-demo -n default -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc bluegreen-demo-preview -n default -p '{"spec": {"type": "LoadBalancer"}}'
+```
+### 8. Access services
+```
+kubectl get svc
+```
+Copy both `Loadbalancer-dns` and open it in your browser
+### 9. Build new image 
+* Update frontend app to version 2 
+* Update image version in `buildspec.yml`
+* Start new build
+### 10. Update bluegreen image
+Change image version tag in bluegreen.yml
+```
+kubectl apply -f bluegreen-rollout.yaml
+```
+Copy both `LoadbalancerDNS` and open it in browser
+### 11. Promote green
+```
+kubectl argo rollouts promote bluegreen-demo
 ```
 
