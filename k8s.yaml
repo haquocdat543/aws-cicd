@@ -5,6 +5,8 @@ Outputs:
     Value: !GetAtt EKSCluster.Endpoint
     Export:
       Name: !Sub "${AWS::StackName}-EKSCluster-Endpoint"
+  Arn:
+    Value: !GetAtt EKSCluster.Arn
 Resources:
   myVPC:
     Type: AWS::EC2::VPC
