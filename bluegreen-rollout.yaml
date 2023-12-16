@@ -7,11 +7,6 @@ metadata:
 spec:
   replicas: 2
   revisionHistoryLimit: 1
-  containers:
-  - name: private-reg-container
-    image: <your-private-image>
-  imagePullSecrets:
-  - name: regcred
   selector:
     matchLabels:
       app: bluegreen-demo
@@ -20,9 +15,11 @@ spec:
       labels:
         app: bluegreen-demo
     spec:
+      imagePullSecrets:
+      - name: <your-registry-secret>
       containers:
         - name: bluegreen-demo
-          image: <your-image-path:version>
+          image: <your-docker-image-link>
           imagePullPolicy: Always
           ports:
             - name: http
@@ -33,3 +30,4 @@ spec:
       autoPromotionEnabled: false
       activeService: bluegreen-demo
       previewService: bluegreen-demo-preview
+
